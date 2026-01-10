@@ -24,9 +24,13 @@ jobs:
         run: |
           npm install --verbose
 
-      - name: Installer Cypress
+      - name: Installer Cypress (en cas d'absence)
         run: |
-          npx cypress install  # Cette commande va télécharger et installer Cypress
+          npx cypress install  # Installer Cypress si nécessaire
+
+      - name: Accorder les permissions d'exécution au binaire Cypress
+        run: |
+          chmod +x ~/.cache/Cypress/15.8.2/Cypress/Cypress  # Chemin à ajuster selon ton installation
 
       - name: Lancer les tests Cypress
         run: npm test
