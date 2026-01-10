@@ -1,10 +1,7 @@
-name: Cypress Tests
+name: Run Cypress tests
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -13,20 +10,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
 
-      - name: Install dependencies
-        run: |
-          cd medibook-tests   # Change to the directory where package.json is located
-          npm ci
+    - name: Cache node modules
+      uses: actions/cache@v2
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
 
-      - name: Run Cypress tests
-        run: |
-          cd medibook-tests   # Make sure to be in the correct folder
-          npx cypress run --headless --record --key YOUR_PROJECT_KEY
+    - name: Clean npm cache
+      run: npm cache clean --force  
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run Cypress tests
+      run: npx cypress run
+
+    - name: Upload Cypress test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: cypress-results
+        path: cypress/results
