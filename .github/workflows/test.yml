@@ -20,13 +20,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk2.0-0 libgdk-pixbuf2.0-0 libxss1 libasound2-dev
 
-      # Installer les dépendances npm dans la racine du projet
       - name: Installer les dépendances npm
         run: |
           npm install --verbose
-        working-directory: ./ # Assure-toi que tu es à la racine du projet
+        working-directory: ./  # Assure-toi que tu es dans la racine
 
-      # Lancer les tests Cypress dans la racine du projet
+      # Ajouter les permissions d'exécution au binaire Cypress
+      - name: Donner les permissions d'exécution à Cypress
+        run: |
+          sudo chmod +x node_modules/.bin/cypress
+
       - name: Lancer les tests Cypress
         run: npm test
-        working-directory: ./ # Assure-toi que tu es à la racine du projet
+        working-directory: ./
