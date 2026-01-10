@@ -7,12 +7,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - name: Vérifier les fichiers
+        run: ls -la
 
       - name: Install dependencies
-        run: npm install  # Exécuté à la racine
+        run: |
+          sudo apt-get install -y libgtk2.0-0 libgdk-pixbuf2.0-0 libxss1 libasound2
+          npm install
 
       - name: Run Cypress tests
         run: npm test  # Exécuté à la racine
-
-
