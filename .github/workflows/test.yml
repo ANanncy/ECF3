@@ -5,17 +5,14 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - run: npm install
-      - run: npm test
-      - uses: actions/upload-artifact@v4  # Mise à jour vers v4
-        with:
-          name: cypress-tests
-          path: cypress/results
+
+      - name: Install dependencies
+        run: npm install  # Exécuté à la racine
+
+      - name: Run Cypress tests
+        run: npm test  # Exécuté à la racine
+
+
