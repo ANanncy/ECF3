@@ -28,14 +28,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk2.0-0 libgdk-pixbuf2.0-0 libxss1 libasound2-dev
 
-      - name: Réinstaller Cypress et vérifier les permissions
+      - name: Réinstaller Cypress (et forcer la mise à jour des permissions)
         run: |
-          # Forcer l'installation de Cypress
+          # Installer les dépendances npm
           npm install --verbose
-          # Réinstaller Cypress si nécessaire
+          # Réinstaller Cypress explicitement
           npx cypress install
-          # Vérification et modification des permissions
-          sudo chmod -R +x ~/.cache/Cypress
+          # Vérification des permissions et leur modification si nécessaire
+          sudo chmod -R 777 ~/.cache/Cypress
+          # Forcer l'exécution avec sudo si le problème de permission persiste
+          sudo chown -R $USER:$USER ~/.cache/Cypress
 
       - name: Lancer les tests Cypress
         run: npm test
