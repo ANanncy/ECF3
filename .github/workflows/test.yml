@@ -23,13 +23,10 @@ jobs:
       - name: Installer les dépendances npm
         run: |
           npm install --verbose
-        working-directory: ./  # Assure-toi que tu es dans la racine
 
-      # Ajouter les permissions d'exécution au binaire Cypress
-      - name: Donner les permissions d'exécution à Cypress
+      - name: Installer Cypress
         run: |
-          sudo chmod +x node_modules/.bin/cypress
+          npx cypress install  # Cette commande va télécharger et installer Cypress
 
       - name: Lancer les tests Cypress
         run: npm test
-        working-directory: ./
