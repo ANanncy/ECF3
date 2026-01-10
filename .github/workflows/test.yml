@@ -24,13 +24,26 @@ jobs:
         run: |
           npm install --verbose
 
-      - name: Installer Cypress (en cas d'absence)
+      - name: Nettoyer le cache npm
         run: |
-          npx cypress install  # Installer Cypress si nécessaire
+          npm cache clean --force
+        # Nettoie le cache npm pour éviter d'éventuels conflits avec Cypress
 
-      - name: Accorder les permissions d'exécution au binaire Cypress
+      - name: Supprimer le cache Cypress précédent
         run: |
-          chmod +x ~/.cache/Cypress/15.8.2/Cypress/Cypress  # Chemin à ajuster selon ton installation
+          rm -rf ~/.cache/Cypress
+        # Supprime le cache Cypress s'il existe déjà
+
+      - name: Réinstaller Cypress
+        run: |
+          npx cypress install
+        # Cette commande télécharge et installe le binaire Cypress
+
+      - name: Vérification des permissions sur le cache Cypress
+        run: |
+          sudo chmod -R +x ~/.cache/Cypress
+        # Applique les bonnes permissions sur le cache Cypress
 
       - name: Lancer les tests Cypress
-        run: npm test
+        run: |
+          npm test
