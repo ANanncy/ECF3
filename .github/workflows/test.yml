@@ -6,17 +6,39 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    container:
-      image: cypress/included:15.8.2
-      options: --user=root
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Installer les dépendances
+      - name: Vérification de l'arborescence des fichiers
+        run: |
+          pwd
+          ls -la
+
+      - name: Nettoyer le cache npm
+        run: |
+          npm cache clean --force
+
+      - name: Supprimer le cache Cypress
+        run: |
+          rm -rf ~/.cache/Cypress
+
+      - name: Installer les dépendances système
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk2.0-0 libgdk-pixbuf2.0-0 libxss1 libasound2-dev
+
+      - name: Installer Cypress globalement
+        run: |
+          sudo npm install -g cypress@15.8.2
+
+      - name: Réinstaller les dépendances npm
         run: |
           npm install --verbose
+
+      - name: Vérifier la version de Cypress
+        run: |
+          npx cypress --version
 
       - name: Lancer les tests Cypress
         run: |
