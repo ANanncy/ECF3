@@ -15,30 +15,30 @@ jobs:
           pwd
           ls -la
 
-      - name: Nettoyer le cache npm
-        run: |
-          npm cache clean --force
-
-      - name: Supprimer le cache Cypress
-        run: |
-          rm -rf ~/.cache/Cypress
-
       - name: Installer les dépendances système
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk2.0-0 libgdk-pixbuf2.0-0 libxss1 libasound2-dev
 
-      - name: Installer Cypress globalement
+      - name: Nettoyer le cache npm
         run: |
-          sudo npm install -g cypress@15.8.2
+          npm cache clean --force
 
-      - name: Réinstaller les dépendances npm
+      - name: Installer les dépendances npm
         run: |
           npm install --verbose
 
-      - name: Vérifier la version de Cypress
+      - name: Ajouter le cache Cypress
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-cypress-
+
+      - name: Forcer l'installation du binaire Cypress
         run: |
-          npx cypress --version
+          npx cypress install --force
 
       - name: Lancer les tests Cypress
         run: |
