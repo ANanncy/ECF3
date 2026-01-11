@@ -1,48 +1,53 @@
-name: Cypress Tests
+name: Run Cypress tests
 
 on:
   push:
-    branches: [ main, master ]
+    branches:
+      - main
+      - master
   pull_request:
-    branches: [ main, master ]
+    branches:
+      - main
+      - master
 
 jobs:
   test:
-    timeout-minutes: 60
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 'lts/*'
+      - name: Vérification de l'arborescence des fichiers
+        run: |
+          pwd
+          ls -la
 
-    - name: Install dependencies
-      run: |
-        cd medibook-tests  # Accède au dossier du projet
-        npm ci
+      - name: Installer les dépendances système
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk2.0-0 libgdk-pixbuf2.0-0 libxss1 libasound2-dev
 
-    - name: Install Cypress
-      run: |
-        cd medibook-tests/cypress  # Accède au dossier cypress
-        npm install cypress
+      - name: Nettoyer le cache npm
+        run: |
+          npm cache clean --force
 
-    - name: Start Medibook Docker Services
-      run: |
-        cd medibook-tests  # Retourner dans le répertoire racine du projet
-        docker-compose -f medibook/docker-compose.yml up -d --build
+      - name: Installer les dépendances npm
+        run: |
+          npm install --verbose
 
-    - name: Run Cypress Tests
-      run: |
-        cd medibook-tests/cypress  # Accéder au dossier cypress pour exécuter Cypress
-        npx cypress run
+      - name: Ajouter le cache Cypress
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-cypress-
 
-    - name: Upload Cypress Results
-      uses: actions/upload-artifact@v3
-      with:
-        name: cypress-report
-        path: medibook-tests/cypress/results/
-        retention-days: 30
+      - name: Forcer l'installation du binaire Cypress
+        run: |
+          npx cypress install --force
+
+      - name: Lancer les tests Cypress
+        run: |
+          npx cypress run
