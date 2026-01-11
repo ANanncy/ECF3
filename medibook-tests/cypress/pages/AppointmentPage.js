@@ -1,5 +1,3 @@
-// cypress/pages/AppointmentPage.js
-
 class AppointmentPage {
     // Sélectionner une date disponible (ex: 12 janvier)
     selectAvailableDate(date) {
