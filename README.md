@@ -142,7 +142,7 @@ Si vous souhaitez exécuter un test particulier, par exemple, register.spec.js, 
 npx cypress run --spec 'cypress/e2e/register.spec.js'
 
 
-***Structure du Test***
+***Structure des Tests***
 
 Les tests sont organisés selon le modèle Page Object Model (POM), ce qui signifie que chaque fonctionnalité ou page est représentée par un fichier JavaScript dans le dossier cypress/pages/.
 
