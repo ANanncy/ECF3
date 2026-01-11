@@ -3,40 +3,46 @@ name: Cypress Tests
 on:
   push:
     branches: [ main, master ]
-  
+  pull_request:
+    branches: [ main, master ]
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    
+
     steps:
-    # Étape 1 : Vérifie le code source du projet
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-    # Étape 2 : Configuration de Node.js
-    - uses: actions/setup-node@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
       with:
-        node-version: lts/*
+        node-version: 'lts/*'
 
-    # Étape 3 : Installation des dépendances
     - name: Install dependencies
       run: |
-        # Vérifier si cypress est bien dans le dossier racine du repo
-        if [ ! -d "cypress" ]; then
-          echo "Le répertoire 'cypress' est manquant !";
-          exit 1;
-        fi
-        cd cypress
+        cd medibook-tests  # Accède au dossier du projet
         npm ci
 
-    # Étape 4 : Démarrer les services Docker (si nécessaire pour l'application)
-    - name: Start Medibook Docker Services
-      run: docker-compose -f medibook/docker-compose.yml up -d --build
-
-    # Étape 5 : Exécuter les tests Cypress
-    - name: Run Cypress tests
+    - name: Install Cypress
       run: |
-        cd cypress
+        cd medibook-tests/cypress  # Accède au dossier cypress
+        npm install cypress
+
+    - name: Start Medibook Docker Services
+      run: |
+        cd medibook-tests  # Retourner dans le répertoire racine du projet
+        docker-compose -f medibook/docker-compose.yml up -d --build
+
+    - name: Run Cypress Tests
+      run: |
+        cd medibook-tests/cypress  # Accéder au dossier cypress pour exécuter Cypress
         npx cypress run
 
-    # Ét
+    - name: Upload Cypress Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: cypress-report
+        path: medibook-tests/cypress/results/
+        retention-days: 30
