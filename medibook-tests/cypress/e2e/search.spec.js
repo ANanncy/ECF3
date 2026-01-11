@@ -12,7 +12,7 @@ describe('Recherche de praticien', () => {
     searchPage.getResults().should('have.length.gt', 0);  // Vérifie qu'il y a des résultats
     searchPage.getResults().each(($praticien) => {
       cy.wrap($praticien).find('.practitioner-name').should('exist').and('not.be.empty');  // Vérifie le nom du praticien
-      cy.wrap($praticien).find('.practitioner-specialty')  // Utilise le bon sélecteur pour la spécialité
+      cy.wrap($praticien).find('.practitioner-specialty')  
         .should('exist')  // Vérifie que la spécialité existe
         .should('not.be.empty')  // Vérifie que la spécialité n'est pas vide
         .should('contain.text', 'Médecin généraliste');  // Vérifie que la spécialité contient "Médecin généraliste"

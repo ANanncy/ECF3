@@ -10,7 +10,7 @@ class SearchPage {
       cy.get(selector)
         .scrollIntoView()
         .clear()
-        .type(value, { force }); // Ajoute force ici si nécessaire
+        .type(value, { force }); 
       return this;
     }
   
@@ -22,7 +22,7 @@ class SearchPage {
   
     enterCity(city) {
       // Utilise fillField pour la saisie de la ville
-      this.fillField('#city', city, true); // Si tu veux forcer la saisie, passe `true` ici
+      this.fillField('#city', city, true); 
       return this;
     }
   
@@ -35,7 +35,7 @@ class SearchPage {
         return this;
       }
   
-    // Attend les résultats après la soumission
+    
     
 
       getResults() {
@@ -43,7 +43,7 @@ class SearchPage {
           .should('have.length.greaterThan', 0)  // Vérifie qu'il y a des résultats
           .each(($el) => {
             cy.wrap($el).find('.practitioner-name').should('exist');  // Vérifie le nom
-            cy.wrap($el).find('.practitioner-specialty')  // Utilise le bon sélecteur
+            cy.wrap($el).find('.practitioner-specialty')  
               .should('exist')  // Vérifie que la spécialité existe
               .should('not.be.empty')  // Vérifie que la spécialité n'est pas vide
               .should('be.visible');  // Vérifie que la spécialité est visible
@@ -57,12 +57,21 @@ class SearchPage {
       return this;
     }
   
-    // Optionnel : Intercepte les requêtes pour attendre la réponse avant de vérifier
+    // Intercepte les requêtes pour attendre la réponse avant de vérifier
     waitForSearchResults() {
       cy.intercept('GET', '/api/search*').as('searchResults'); // Intercepte l'API de recherche
       cy.wait('@searchResults'); // Attend la réponse avant de continuer
       return this;
     }
+
+    // méthode pour sélectionner un praticien spécifique
+  selectPractitioner(practitionerName) {
+    cy.get('.practitioner-info')  // Cibler chaque carte de praticien
+      .contains(practitionerName)  // Cherche le nom du praticien sur la carte
+      .click();  // Clique sur le praticien pour accéder à sa page de détails
+    return this;
+  }
+    
   }
   
   export default SearchPage;
