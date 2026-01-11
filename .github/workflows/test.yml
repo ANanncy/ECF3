@@ -21,6 +21,11 @@ jobs:
     # Étape 3 : Installation des dépendances
     - name: Install dependencies
       run: |
+        # Vérifier si cypress est bien dans le dossier racine du repo
+        if [ ! -d "cypress" ]; then
+          echo "Le répertoire 'cypress' est manquant !";
+          exit 1;
+        fi
         cd cypress
         npm ci
 
@@ -34,15 +39,4 @@ jobs:
         cd cypress
         npx cypress run
 
-    # Étape 6 : Sauvegarder les rapports Cypress
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
-      with:
-        name: cypress-report
-        path: cypress/results/
-        retention-days: 30
-
-
-
-
-
+    # Ét
