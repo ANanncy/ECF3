@@ -1,45 +1,48 @@
-name: Run Cypress tests
+name: Cypress Tests
 
-on: [push, pull_request]
-
+on:
+  push:
+    branches: [ main, master ]
+  
 jobs:
   test:
+    timeout-minutes: 60
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    # Étape 1 : Vérifie le code source du projet
+    - uses: actions/checkout@v4
 
-      - name: Vérification de l'arborescence des fichiers
-        run: |
-          pwd
-          ls -la
+    # Étape 2 : Configuration de Node.js
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
 
-      - name: Installer les dépendances système
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk2.0-0 libgdk-pixbuf2.0-0 libxss1 libasound2-dev
+    # Étape 3 : Installation des dépendances
+    - name: Install dependencies
+      run: |
+        cd cypress
+        npm ci
 
-      - name: Nettoyer le cache npm
-        run: |
-          npm cache clean --force
+    # Étape 4 : Démarrer les services Docker (si nécessaire pour l'application)
+    - name: Start Medibook Docker Services
+      run: docker-compose -f medibook/docker-compose.yml up -d --build
 
-      - name: Installer les dépendances npm
-        run: |
-          npm install --verbose
+    # Étape 5 : Exécuter les tests Cypress
+    - name: Run Cypress tests
+      run: |
+        cd cypress
+        npx cypress run
 
-      - name: Ajouter le cache Cypress
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/Cypress
-          key: ${{ runner.os }}-cypress-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-cypress-
+    # Étape 6 : Sauvegarder les rapports Cypress
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: cypress-report
+        path: cypress/results/
+        retention-days: 30
 
-      - name: Forcer l'installation du binaire Cypress
-        run: |
-          npx cypress install --force
 
-      - name: Lancer les tests Cypress
-        run: |
-          npx cypress run
+
+
+
