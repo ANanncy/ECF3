@@ -18,7 +18,8 @@ C:.
 │
 └───cypress
     ├───e2e
-    │   │   register.spec.js
+    │   │   bookapp.spec.js
+            register.spec.js
     │   │   search.spec.js
     │   │  
     │   ├───1-getting-started
